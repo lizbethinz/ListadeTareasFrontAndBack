@@ -1,0 +1,26 @@
+# -----------------------------
+# IGNORAR ARCHIVOS GENERALES Y DEL SISTEMA
+# -----------------------------
+.DS_Store
+*.log
+.vscode
+.idea
+
+# ---------------------------------------------
+# 1. FRONTEND (React/Vite) - Nombre de la carpeta: ListaTareas
+# ---------------------------------------------
+# La carpeta con todas las dependencias de Node.js
+/ListaTareas/node_modules
+# Carpeta de compilación del frontend
+/ListaTareas/dist
+/ListaTareas/build
+
+# --------------------------------------------------
+# 2. BACKEND (Spring Boot/Java) - Nombre de la carpeta: MicroservicioTareas
+# --------------------------------------------------
+# Carpeta de compilación de Maven/Gradle
+/MicroservicioTareas/target
+# Archivos de configuración de IDE
+/MicroservicioTareas/.gradle
+/MicroservicioTareas/.idea
+*.iml 
