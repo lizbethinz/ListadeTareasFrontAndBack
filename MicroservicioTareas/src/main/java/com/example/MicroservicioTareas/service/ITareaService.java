@@ -1,5 +1,6 @@
 package com.example.MicroservicioTareas.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import com.example.MicroservicioTareas.entity.ActualizaTareaRequest;
@@ -17,5 +18,7 @@ public interface ITareaService {
     Tarea actualizarTarea(ActualizaTareaRequest request);
 
     List<Tarea> getTareasActivasByUsuario(Long idUsuario);
+
+    List<Tarea> obtenerTareasFiltradas(Long idUsuario, String estado, LocalDate fechaInicio, LocalDate fechaFin);
 
 }

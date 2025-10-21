@@ -19,7 +19,7 @@ import { FaTasks } from 'react-icons/fa';
 
 
 const drawerWidth = 240;
-const navItems = ['Nueva tarea', 'Cerrar Sesión'];
+const navItems = ['Tareas','Reportes', 'Cerrar Sesión'];
 const nombre =  localStorage.getItem('nombre');
 
 function Menu(props) {
@@ -39,23 +39,22 @@ function Menu(props) {
     setMobileOpen(false); 
   };
 
-  /*const nuevaTarea = ()=>{
-    console.log("nueva tarea");
-    navigate('/nuevaTarea'); 
-    setMobileOpen(false); 
-  };*/
+  const iraReportes = ()=>{
+    console.log("reportes");
+    navigate('/reportes'); 
+   setMobileOpen(false); 
+  };
 
   const listadoTareas= ()=>{
     console.log("tareas activas");
     navigate('/tareas'); 
-    setMobileOpen(false); 
+  setMobileOpen(false); 
   };
 
 const listadoTareasCompletadas = ()=>{
-    console.log("tareas completadas");
-    //navigate('/TareasCompletadas'); 
-    setMobileOpen(false); 
-  };
+console.log("tareas completadas");
+setMobileOpen(false); 
+ };
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: 'center' }}>
@@ -68,9 +67,8 @@ const listadoTareasCompletadas = ()=>{
           <ListItem key={item} disablePadding 
           onClick={
             item === 'Cerrar Sesión' ? handleLogout 
-          :item === 'Nueva tarea' ? props.onNewTaskClick
-          :item ==='Tareas activas'? listadoTareas
-          :item ==='Tareas completadas'? listadoTareasCompletadas
+          :item ==='Tareas'? listadoTareas
+          :item ==='Reportes'? iraReportes
           : undefined}>
             <ListItemButton sx={{ textAlign: 'center' }}>
               <ListItemText primary={item} />
@@ -109,9 +107,8 @@ const listadoTareasCompletadas = ()=>{
               <Button key={item} sx={{ color: '#fff' }} 
               onClick={
                 item === 'Cerrar Sesión' ? handleLogout 
-                :item === 'Nueva tarea' ? props.onNewTaskClick
-                :item ==='Tareas activas'? listadoTareas
-                :item ==='Tareas completadas'? listadoTareasCompletadas
+                :item ==='Tareas'? listadoTareas
+                :item ==='Reportes'? iraReportes
           : undefined}>
                 {item}
               </Button>

@@ -25,7 +25,7 @@ public class JwtUtil {
     //tendrá 10 horas de validez
     public static final long JWT_TOKEN_VALIDITY = 10 * 60 * 60; 
 
-    // --- Métodos de Ayuda ---
+
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
@@ -39,29 +39,27 @@ public class JwtUtil {
                                   .getBody();
         return claimsResolver.apply(claims);
     }
-    
-    // --- Lógica Principal de JWT ---
 
-    // 2. Extraer el Username (Subject)
+
+    //Extraer el Username (Subject)
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
     
-    // 3. Generar el Token
+    //Generar el Token
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        // Puedes añadir roles, IDs u otra info aquí (claims)
         
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(userDetails.getUsername()) // El email del usuario
+                .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000)) // 10h
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
     
-    // 4. Validar el Token
+    //Validar el Token
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

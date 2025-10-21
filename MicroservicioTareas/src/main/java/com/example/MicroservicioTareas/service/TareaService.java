@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -85,5 +84,13 @@ public class TareaService implements ITareaService {
      public List<Tarea> getTareasActivasByUsuario(Long idUsuario) {
         return repository.findByIdUsuarioIdAndCompletadaFalseAndCanceladaFalse(idUsuario);
     }
+
+     @Override
+     public List<Tarea> obtenerTareasFiltradas(Long idUsuario, String estado, LocalDate fechaInicio,
+            LocalDate fechaFin) {
+        if (estado != null && estado.equalsIgnoreCase("TODAS")) {
+        estado = null; 
+    }
+     return repository.findTareasByFilters(idUsuario, estado, fechaInicio, fechaFin);     }
 
 }

@@ -19,6 +19,8 @@ import Menu from "../menu/Menu";
 import TareaModal from "./TareaModal";
 import Swal from 'sweetalert2';
 import { useAlert } from "../AlertContext";
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 const Tareas = () => {
     
@@ -31,6 +33,7 @@ const Tareas = () => {
     const [currentTarea, setCurrentTarea] = useState(null);
  
     const { showAlert } = useAlert();
+
 
     const TAREA_INICIAL = {
     id: null, 
@@ -49,8 +52,8 @@ const Tareas = () => {
 
     const getTareas = async() => {
         setIsLoading(true); 
-        setError(null); // Limpiar errores anteriores
-        setTareas([]); // Opcional: limpiar la tabla anterior
+        setError(null); 
+        setTareas([]); 
         const token = localStorage.getItem('token');
         console.log("Token a enviar:", token);
         const userId = localStorage.getItem('userId');
@@ -141,59 +144,84 @@ const columns = [
       };
 
       const handleCancelar = async() => {
-        console.log('Cancelando tarea:', params.row.id);
+        const result = await Swal.fire({
+        title: '¿Estás seguro de eliminar la tarea?',
+        text: `Esta acción marcará la tarea "${params.row.nombre}" como cancelada. ¿Deseas continuar?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3A9AE8',
+        cancelButtonColor: '#E83A43',
+        confirmButtonText: 'Sí, Cancelar',
+        cancelButtonText: 'No, Volver'
+        });
+            if (result.isConfirmed) {
+                console.log('Cancelando tarea:', params.row.id);
 
-        const token = localStorage.getItem('token');
+                const token = localStorage.getItem('token');
 
-        const tareaACancelar =({
-             ...params.row,
-             cancelada:true,
-             completada: false
-        })
-        try {
-            await axios.put(
-                `http://localhost:8080/v1/tareas/actualizatarea`,
-                tareaACancelar,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}` 
-                    }
+                const tareaACancelar =({
+                    ...params.row,
+                    cancelada:true,
+                    completada: false
+                })
+                try {
+                    await axios.put(
+                        `http://localhost:8080/v1/tareas/actualizatarea`,
+                        tareaACancelar,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${token}` 
+                            }
+                        }
+                    );
+                    showAlert(`Tarea cancelada exitosamente.`, 'success');
+                    getTareas(); 
+
+                } catch (err) {
+                    console.error('Error al cancelar la tarea:', err);
+                    showAlert('Hubo un error al cancelar la tarea.', 'error');
                 }
-            );
-            showAlert(`Tarea cancelada exitosamente.`, 'success');
-            getTareas(); 
+            }
 
-        } catch (err) {
-            console.error('Error al cancelar la tarea:', err);
-            showAlert('Hubo un error al cancelar la tarea.', 'error');
-        }
       };
     const handleFinalizar = async() => {
-        console.log('Cambiar estado Tarea ID:', params.row.id);
-        console.log('Finalizando tarea:', params.row.id);
+        const result = await Swal.fire({
+        title: '¿Estás seguro de finalizar la tarea?',
+        text: `Esta acción marcará la tarea "${params.row.nombre}" como finalizada. ¿Deseas continuar?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3AE888',
+        cancelButtonColor: '#E83A43',
+        confirmButtonText: 'Sí, finalizar',
+        cancelButtonText: 'No, Volver'
+        });
+        if (result.isConfirmed) {
+            console.log('Cambiar estado Tarea ID:', params.row.id);
+            console.log('Finalizando tarea:', params.row.id);
 
-        const token = localStorage.getItem('token');
+            const token = localStorage.getItem('token');
 
-        const tareaAFinalizar =({
-             ...params.row,
-             completada: true
-        })
-        try {
-            await axios.put(
-                `http://localhost:8080/v1/tareas/actualizatarea`,
-                tareaAFinalizar,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${token}` 
+            const tareaAFinalizar =({
+                ...params.row,
+                completada: true
+            })
+            try {
+                await axios.put(
+                    `http://localhost:8080/v1/tareas/actualizatarea`,
+                    tareaAFinalizar,
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${token}` 
+                        }
                     }
-                }
-            );
-            showAlert(`Tarea finalizada exitosamente.`, 'success');
-            getTareas(); 
+                );
+                showAlert(`Tarea finalizada exitosamente.`, 'success');
+                getTareas(); 
 
-        } catch (err) {
-            console.error('Error al finalizar la tarea:', err);
-            showAlert('Hubo un error al finalizar la tarea.', 'error');
+            } catch (err) {
+                console.error('Error al finalizar la tarea:', err);
+                showAlert('Hubo un error al finalizar la tarea.', 'error');
+            }
         }
       };
 
@@ -325,7 +353,7 @@ const handleGuardarCambios = async () => {
         );
         
         setModalOpen(false);
-        getTareas();         
+        getTareas();
         showAlert(`Tarea ${isNewTask ? 'registrada' : 'actualizada'} exitosamente.`, 'success');
 
 
@@ -339,7 +367,38 @@ const handleGuardarCambios = async () => {
 
     return (
         <div>
-            <Menu onNewTaskClick={handleNewTaskClick}/>
+            <Menu/>
+                <Typography 
+                    variant="h4" 
+                    component="h1" 
+                    sx={{ 
+                        mr: 4, 
+                        fontWeight: 'bold',
+                        color: '#333' 
+                    }}
+                >
+                    Listado de Tareas
+                </Typography>
+            <Box 
+                sx={{ 
+                    display: 'flex', 
+                    justifyContent: 'flex-start', 
+                    alignItems: 'center', 
+                    mt: 3, 
+                    mb: 2 
+                }}
+            >
+                <Button 
+                    variant="contained"
+                    onClick={handleNewTaskClick} 
+                    style={{ 
+                    backgroundColor: '#3A9AE8',
+                    color:'white' }}
+                >
+                    + Agregar Nueva Tarea
+                </Button>
+            </Box>
+
            <Paper sx={{ height: 400, width: '100%',overflowX: 'auto' }}>
                 <DataGrid
                     rows={tareas}

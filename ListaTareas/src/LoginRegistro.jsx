@@ -63,14 +63,12 @@ const LoginRegistro = () => {
         }
         if(action==="Iniciar Sesión"){
             console.log("Iniciar Sesión con:", email, password);
-            // Aquí iría la lógica para iniciar sesión
             const loginData = {
                 email: email,
                 password: password
             };
             console.log("Datos de inicio de sesión:", loginData);
             axios.post('http://localhost:8080/v1/login', loginData).then(response => {
-                //guardaremos el token de autenticación en el almacenamiento local
                 localStorage.setItem('token', response.data.jwt);
                 localStorage.setItem('userId', response.data.userId);
                 localStorage.setItem('username', response.data.username);
@@ -106,6 +104,24 @@ const LoginRegistro = () => {
                 showAlert('Error al registrarse: ' + error.response.data, 'error');
             
             });  
+        }if (action === "Recuperar Contraseña") {
+            const recoveryData = {
+                email: email
+            };
+            console.log("Recuperar contraseña para:", email);
+
+            axios.post('http://localhost:8080/v1/forgot-password', recoveryData)
+            .then(response => {
+                showAlert('Se ha enviado un correo electrónico con instrucciones para restablecer tu contraseña.', 'success');
+                setAction("Iniciar Sesión"); 
+                setEmail("");
+                setErrors({});
+            }).catch(error => {
+                console.error("Error al solicitar recuperación:", error);
+                const errorMessage = error.response?.data || 'Error al procesar la solicitud.';
+                showAlert('Error: ' + errorMessage, 'error');
+            });
+            return;
         }
     }
 
@@ -171,28 +187,35 @@ const LoginRegistro = () => {
                                 ),
                             }}
                         />
-                        <TextField
-                            label="Contraseña"
-                            name="password"
-                            type="password"
-                            fullWidth
-                            margin="normal"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            error={!!errors.password}
-                            helperText={errors.password}
-                                   InputProps={{
+                        {(action === "Iniciar Sesión" || action === "Registrarse") && (
+                          <TextField
+                                label="Contraseña"
+                                name="password"
+                                type="password"
+                                fullWidth
+                                margin="normal"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                error={!!errors.password}
+                                helperText={errors.password}
+                                InputProps={{
                                 startAdornment: (
-                                    <InputAdornment position="start">
-                                        <TbLockPassword style={{ color: '#b86614' }} /> 
-                                    </InputAdornment>
+                                <InputAdornment position="start">
+                                <TbLockPassword style={{ color: '#b86614' }} /> 
+                                </InputAdornment>
                                 ),
-                            }}
-                        />
+                                }}
+                            />
+                    )}
                     </div>
-                    {action==="Iniciar Sesión"?<div className='Forgot-link'>¿Olvidaste tu contraseña?<span onClick={()=>{setAction("Recuperar Contraseña")}}>Click aquí</span></div>
+                    {action === "Recuperar Contraseña" && (
+                        <div className='Forgot-link'>
+                            ¿Recordaste tu contraseña?<span onClick={() => setAction("Iniciar Sesión")}> Volver a Iniciar Sesión</span>
+                        </div>
+                    )}
+                   {/* {action==="Iniciar Sesión"?<div className='Forgot-link'>¿Olvidaste tu contraseña?<span onClick={()=>{setAction("Recuperar Contraseña")}}>Click aquí</span></div>
                     :<div></div>
-                    }
+                    } */}
                     {action==="Registrarse"?<div></div>:
                     <div className='Forgot-link'>¿Aún no tienes cuenta?<span onClick={()=>{setAction("Registrarse")}}>Registrarse</span></div>
                     }

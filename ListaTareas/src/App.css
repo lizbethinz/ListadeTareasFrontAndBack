@@ -47,5 +47,5 @@ body {
 }
 
 .my-swal-popup-above-modal {
-  z-index: 99999 !important; /* Un valor muy alto para superar el modal (que es ~1300) */
+  z-index: 99999 !important; 
 }

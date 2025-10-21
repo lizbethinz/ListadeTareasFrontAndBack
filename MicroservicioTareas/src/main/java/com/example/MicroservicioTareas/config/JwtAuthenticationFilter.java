@@ -24,8 +24,8 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
-    private final JwtUtil jwtService; // CLASE QUE MANEJA LA LECTURA/VALIDACIÓN DEL JWT
-    private final UserDetailsService userDetailsService; // NECESARIO PARA CARGAR EL USUARIO
+    private final JwtUtil jwtService; 
+    private final UserDetailsService userDetailsService; 
 
     @Override
     protected void doFilterInternal(
@@ -36,49 +36,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 final String authHeader = request.getHeader("Authorization");
         final String jwt;
-        final String username; // o email, dependiendo de lo que uses como SUB en el token
-
-        // 1. Verificar si hay un token válido
+        final String username; 
+  
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            // Si no hay token o no tiene el prefijo, pasa al siguiente filtro (y el AuthorizationFilter lo bloqueará si la ruta está protegida)
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 2. Extraer el token y el usuario
-        jwt = authHeader.substring(7); // "Bearer " tiene 7 caracteres
         
-        // **IMPORTANTE:** Aquí DEBES usar tu JwtService para extraer el nombre de usuario
+        jwt = authHeader.substring(7); 
+        
+        
         username = jwtService.extractUsername(jwt); 
 
-        // 3. Validar el token y autenticar
-        // Si el username no es nulo y AÚN NO hay autenticación en el SecurityContext
+        
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             
-            // Cargar los detalles del usuario desde la base de datos o servicio
+            
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            // Validar si el token es válido (no expirado, firma correcta)
+            
             if (jwtService.validateToken(jwt, userDetails)) {
                 
-                // Si es válido, crear el objeto de autenticación
+                
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     userDetails,
-                    null, // Las credenciales son nulas en JWT
-                    userDetails.getAuthorities() // Roles/Autoridades
+                    null, 
+                    userDetails.getAuthorities() 
                 );
 
-                // Asignar detalles de la solicitud (IP, Session ID, etc.)
+
                 authToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)
                 );
 
-                // Establecer la autenticación en el SecurityContext (¡Esto es lo que resuelve el 401!)
+                
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
-        // Continuar con la cadena de filtros
+
         filterChain.doFilter(request, response);
     }
 

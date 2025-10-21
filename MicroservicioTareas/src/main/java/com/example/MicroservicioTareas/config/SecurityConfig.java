@@ -50,6 +50,7 @@ public class SecurityConfig {
         .requestMatchers("/v1/home").authenticated()
         .requestMatchers("/v1/admin").hasAuthority("ADMIN")
         .requestMatchers("/v1/tareas/**").authenticated()
+        .requestMatchers("/v1/reportes/**").authenticated()
         .anyRequest().authenticated()
         )
         .formLogin(Customizer.withDefaults())
